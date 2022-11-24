@@ -41,6 +41,14 @@ async function run() {
         /*
         ////// Users Endpoint //////
         */
+
+        app.get('/users', async (req, res) => {
+            let query = {};
+            const users = await usersCollection.find(query).toArray();
+
+            res.send(users);
+        });
+
         // Add user to usersCollection
         app.post('/users', async (req, res) => {
             const user = req.body;
