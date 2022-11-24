@@ -68,6 +68,26 @@ async function run() {
                 isAdmin: user.role === 'admin',
             });
         });
+        // Get Sellers
+        app.get('/users/sellers/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+
+            res.send({
+                isSeller: user.role === 'seller',
+            });
+        });
+        // Get Buyers
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+
+            res.send({
+                isUser: user.role === 'user',
+            });
+        });
     } finally {
     }
 }
