@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 // port
 const port = process.env.PORT;
@@ -11,6 +12,22 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// MongoDB
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.onfc57d.mongodb.net/?retryWrites=true&w=majority`;
+const client = new MongoClient(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverApi: ServerApiVersion.v1,
+});
+
+async function run() {
+    try {
+    } finally {
+    }
+}
+
+run().catch((err) => console.log(err));
 
 // '/' endpoint
 app.get('/', (req, res) => {
