@@ -26,6 +26,7 @@ async function run() {
         const database = client.db('lapStoreDB');
         const usersCollection = database.collection('users');
         const categoryCollection = database.collection('categories');
+        const productCollection = database.collection('products');
 
         /*
         ////// Categories Endpoint //////
@@ -36,6 +37,18 @@ async function run() {
             const categories = await categoryCollection.find(query).toArray();
 
             res.send(categories);
+        });
+
+        /*
+        /////// Products Endpoint ////////
+        */
+        // Add a product
+        app.post('/products/add', async (req, res) => {
+            const product = req.body;
+            product.postedAt = new Date();
+            const result = await productCollection.insertOne(product);
+
+            res.send(result);
         });
 
         /*
