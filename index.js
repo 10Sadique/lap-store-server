@@ -25,7 +25,22 @@ async function run() {
     try {
         const database = client.db('lapStoreDB');
         const usersCollection = database.collection('users');
+        const categoryCollection = database.collection('categories');
 
+        /*
+        ////// Categories Endpoint //////
+        */
+        // Get all categories
+        app.get('/categories', async (req, res) => {
+            const query = {};
+            const categories = await categoryCollection.find(query).toArray();
+
+            res.send(categories);
+        });
+
+        /*
+        ////// Users Endpoint //////
+        */
         // Add user to usersCollection
         app.post('/users', async (req, res) => {
             const user = req.body;
