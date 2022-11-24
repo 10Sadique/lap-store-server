@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // port
 const port = process.env.PORT;
@@ -57,6 +57,27 @@ async function run() {
             const product = req.body;
             product.postedAt = new Date();
             const result = await productCollection.insertOne(product);
+
+            res.send(result);
+        });
+
+        // Advertise a product
+        app.put('/advertise/:email/:id', async (req, res) => {
+            const email = req.params.email;
+            const id = req.params.id;
+            const filter = { sellerEmail: email, _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    isAdvertised: true,
+                },
+            };
+            const options = { upsert: true };
+
+            const result = await productCollection.updateOne(
+                filter,
+                updatedDoc,
+                options
+            );
 
             res.send(result);
         });
