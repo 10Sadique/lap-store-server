@@ -23,6 +23,16 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
+        const database = client.db('lapStoreDB');
+        const usersCollection = database.collection('users');
+
+        // Add user to usersCollection
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+
+            res.send(result);
+        });
     } finally {
     }
 }
