@@ -42,6 +42,16 @@ async function run() {
         /*
         /////// Products Endpoint ////////
         */
+
+        // Get products by seller email
+        app.get('/products/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { sellerEmail: email };
+            const products = await productCollection.find(query).toArray();
+
+            res.send(products);
+        });
+
         // Add a product
         app.post('/products/add', async (req, res) => {
             const product = req.body;
