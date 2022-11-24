@@ -42,6 +42,7 @@ async function run() {
         ////// Users Endpoint //////
         */
 
+        // Get all users
         app.get('/users', async (req, res) => {
             let query = {};
             const users = await usersCollection.find(query).toArray();
@@ -55,6 +56,17 @@ async function run() {
             const result = await usersCollection.insertOne(user);
 
             res.send(result);
+        });
+
+        // Get Admin user
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+
+            res.send({
+                isAdmin: user.role === 'admin',
+            });
         });
     } finally {
     }
