@@ -208,6 +208,18 @@ async function run() {
         /*
         //////// Oreder Collection ////////
         */
+
+        // Get orders by email
+        app.get('/orders', async (req, res) => {
+            const email = req.query.email;
+            const query = {
+                userEmail: email,
+            };
+            const products = await orderCollection.find(query).toArray();
+
+            res.send(products);
+        });
+
         // Add orders by id
         app.post('/orders/add', async (req, res) => {
             const product = req.body;
