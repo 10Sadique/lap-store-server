@@ -29,6 +29,7 @@ async function run() {
         const categoryCollection = database.collection('categories');
         const productCollection = database.collection('products');
         const wishlistCollection = database.collection('wishlist');
+        const orderCollection = database.collection('orders');
 
         /*
         ////// Categories Endpoint //////
@@ -197,8 +198,33 @@ async function run() {
             const existingProduct = await wishlistCollection.findOne(query);
             if (!existingProduct) {
                 const result = await wishlistCollection.insertOne(product);
-                res.send(result);
+                return res.send(result);
             }
+            res.send({
+                success: false,
+            });
+        });
+
+        /*
+        //////// Oreder Collection ////////
+        */
+        // Add orders by id
+        app.post('/orders/add', async (req, res) => {
+            const product = req.body;
+            const query = {
+                productId: product.productId,
+                userEmail: product.userEmail,
+            };
+            const existingProduct = await orderCollection.findOne(query);
+            if (!existingProduct) {
+                const result = await orderCollection.insertOne(product);
+
+                return res.send(result);
+            }
+
+            res.send({
+                success: false,
+            });
         });
     } finally {
     }
