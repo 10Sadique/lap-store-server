@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { query } = require('express');
 
 // port
 const port = process.env.PORT;
@@ -166,8 +167,19 @@ async function run() {
         /*
         //////// Whislist Endpoint /////////
         */
+        // Get wishlist products
+        app.get('/wishlist', async (req, res) => {
+            const email = req.query.email;
+            const query = {
+                userEmail: email,
+            };
+            const wishlist = await wishlistCollection.find(query).toArray();
+
+            res.send(wishlist);
+        });
+
         // Add product to wishlist
-        app.post('/wishlisht/add', async (req, res) => {
+        app.post('/wishlist/add', async (req, res) => {
             const product = req.body;
             const query = {
                 productId: product.productId,
