@@ -43,18 +43,29 @@ async function run() {
         /////// Products Endpoint ////////
         */
 
+        // Get all products
+        app.get('/products/all', async (req, res) => {
+            const query = { isSold: false };
+            const products = await productCollection.find(query).toArray();
+
+            res.send(products);
+        });
+
         // Get products by category
         app.get('/products/:category', async (req, res) => {
             const category = req.params.category;
-            const query = { category: category };
+            const query = {
+                category: category,
+                isSold: false,
+            };
             const products = await productCollection.find(query).toArray();
 
             res.send(products);
         });
 
         // Get products by seller email
-        app.get('/products/:email', async (req, res) => {
-            const email = req.params.email;
+        app.get('/products', async (req, res) => {
+            const email = req.query.email;
             const query = { sellerEmail: email };
             const products = await productCollection.find(query).toArray();
 
