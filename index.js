@@ -27,6 +27,7 @@ async function run() {
         const usersCollection = database.collection('users');
         const categoryCollection = database.collection('categories');
         const productCollection = database.collection('products');
+        const wishlistCollection = database.collection('wishlist');
 
         /*
         ////// Categories Endpoint //////
@@ -160,6 +161,23 @@ async function run() {
             res.send({
                 isUser: user.role === 'user',
             });
+        });
+
+        /*
+        //////// Whislist Endpoint /////////
+        */
+        // Add product to wishlist
+        app.post('/wishlisht/add', async (req, res) => {
+            const product = req.body;
+            const query = {
+                productId: product.productId,
+                userEmail: product.userEmail,
+            };
+            const existingProduct = await wishlistCollection.findOne(query);
+            if (!existingProduct) {
+                const result = await wishlistCollection.insertOne(product);
+                res.send(result);
+            }
         });
     } finally {
     }
