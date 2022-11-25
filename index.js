@@ -178,6 +178,15 @@ async function run() {
             res.send(wishlist);
         });
 
+        // Get wishlist products by id
+        app.get('/wishlist/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const product = await productCollection.findOne(query);
+
+            res.send(product);
+        });
+
         // Add product to wishlist
         app.post('/wishlist/add', async (req, res) => {
             const product = req.body;
