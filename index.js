@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { query } = require('express');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 // port
 const port = process.env.PORT;
@@ -30,6 +30,7 @@ async function run() {
         const productCollection = database.collection('products');
         const wishlistCollection = database.collection('wishlist');
         const orderCollection = database.collection('orders');
+        const buyerCollection = database.collection('buyers');
 
         /*
         ////// Categories Endpoint //////
@@ -259,6 +260,44 @@ async function run() {
             res.send({
                 success: false,
             });
+        });
+
+        //----Payment-----//
+        app.post('/create-payment-intent', async (req, res) => {
+            const product = req.body;
+            const price = product.price;
+            const amount = parseInt(price) * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: 'usd',
+                amount: amount,
+                payment_method_types: ['card'],
+            });
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+            });
+        });
+
+        // save payment data to db
+        app.post('/payment', async (req, res) => {
+            const buyer = req.body;
+            const result = await buyerCollection.insertOne(buyer);
+
+            const id = buyer.productId;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    isSold: true,
+                },
+            };
+
+            const updatedResult = await productCollection.updateOne(
+                filter,
+                updatedDoc
+            );
+
+            res.send(result);
         });
     } finally {
     }
