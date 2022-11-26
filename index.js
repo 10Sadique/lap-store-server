@@ -15,6 +15,27 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/*----JWT Middleware----*/
+const verifyJWT = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({
+            message: 'Unauthorized Access',
+        });
+    }
+
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({
+                message: 'Forbidden Access',
+            });
+        }
+        req.decoded = decoded;
+        next();
+    });
+};
+
 // MongoDB
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.onfc57d.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
@@ -106,7 +127,7 @@ async function run() {
         });
 
         // Add a product
-        app.post('/products/add', async (req, res) => {
+        app.post('/products/add', verifyJWT, async (req, res) => {
             const product = req.body;
             product.postedAt = new Date();
             const result = await productCollection.insertOne(product);
@@ -115,7 +136,7 @@ async function run() {
         });
 
         // Delete a product
-        app.delete('/products/:id', async (req, res) => {
+        app.delete('/products/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await productCollection.deleteOne(query);
@@ -172,7 +193,7 @@ async function run() {
         });
 
         // Add user to usersCollection
-        app.post('/users', async (req, res) => {
+        app.post('/users', verifyJWT, async (req, res) => {
             const user = req.body;
             const query = { email: user.email };
             const existingUser = await usersCollection.findOne(query);
@@ -187,7 +208,7 @@ async function run() {
         });
 
         // verify user
-        app.put('/users/:id', async (req, res) => {
+        app.put('/users/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const updatedDoc = {
@@ -206,7 +227,7 @@ async function run() {
         });
 
         // Delete user
-        app.delete('/users/:id', async (req, res) => {
+        app.delete('/users/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await usersCollection.deleteOne(query);
@@ -280,7 +301,7 @@ async function run() {
         });
 
         // Add product to wishlist
-        app.post('/wishlist/add', async (req, res) => {
+        app.post('/wishlist/add', verifyJWT, async (req, res) => {
             const product = req.body;
             const query = {
                 productId: product.productId,
@@ -312,7 +333,7 @@ async function run() {
         });
 
         // Add orders by id
-        app.post('/orders/add', async (req, res) => {
+        app.post('/orders/add', verifyJWT, verifyJWT, async (req, res) => {
             const product = req.body;
             const query = {
                 productId: product.productId,
@@ -331,7 +352,7 @@ async function run() {
         });
 
         //----Payment-----//
-        app.post('/create-payment-intent', async (req, res) => {
+        app.post('/create-payment-intent', verifyJWT, async (req, res) => {
             const product = req.body;
             const price = product.price;
             const amount = parseInt(price) * 100;
@@ -348,7 +369,7 @@ async function run() {
         });
 
         // save payment data to db
-        app.post('/payment', async (req, res) => {
+        app.post('/payment', verifyJWT, async (req, res) => {
             const buyer = req.body;
             const result = await buyerCollection.insertOne(buyer);
 
