@@ -168,6 +168,25 @@ async function run() {
             // });
         });
 
+        // verify user
+        app.put('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    isVerified: true,
+                },
+            };
+            const options = { upsert: true };
+            const result = await usersCollection.updateOne(
+                filter,
+                updatedDoc,
+                options
+            );
+
+            res.send(result);
+        });
+
         // Delete user
         app.delete('/users/:id', async (req, res) => {
             const id = req.params.id;
