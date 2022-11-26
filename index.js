@@ -82,13 +82,22 @@ async function run() {
             res.send(categories);
         });
 
-        /*
-        /////// Products Endpoint ////////
-        */
+        /*----Products Endpoint----*/
 
         // Get all products
         app.get('/products/all', async (req, res) => {
             const query = { isSold: false };
+            const products = await productCollection.find(query).toArray();
+
+            res.send(products);
+        });
+
+        // Get advertised products
+        app.get('/products/advertised', async (req, res) => {
+            const query = {
+                isAdvertised: true,
+                isSold: false,
+            };
             const products = await productCollection.find(query).toArray();
 
             res.send(products);
