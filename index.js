@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const jwt = require('jsonwebtoken');
 
 // port
 const port = process.env.PORT;
@@ -32,9 +33,26 @@ async function run() {
         const orderCollection = database.collection('orders');
         const buyerCollection = database.collection('buyers');
 
-        /*
-        ////// Categories Endpoint //////
-        */
+        /*---- JWT Endpoint----*/
+        app.get('/jwt', async (req, res) => {
+            const email = req.query.email;
+            console.log(email);
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+
+            if (user) {
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, {
+                    expiresIn: '2y',
+                });
+
+                return res.send({ accessToken: token });
+            }
+            res.send({
+                accessToken: '',
+            });
+        });
+
+        /*----Categories Endpoint----*/
         // Get all categories
         app.get('/categories', async (req, res) => {
             const query = {};
