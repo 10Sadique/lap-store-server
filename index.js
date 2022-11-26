@@ -156,7 +156,23 @@ async function run() {
         // Add user to usersCollection
         app.post('/users', async (req, res) => {
             const user = req.body;
-            const result = await usersCollection.insertOne(user);
+            const query = { email: user.email };
+            const existingUser = await usersCollection.findOne(query);
+            if (!existingUser) {
+                const result = await usersCollection.insertOne(user);
+                return res.send(result);
+            }
+
+            // res.send({
+            //     success: false,
+            // });
+        });
+
+        // Delete user
+        app.delete('/users/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
 
             res.send(result);
         });
