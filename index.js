@@ -133,6 +133,21 @@ async function run() {
         // Get all users
         app.get('/users', async (req, res) => {
             let query = {};
+            // query for normal user
+            if (req.query.role === 'user') {
+                query = {
+                    role: 'user',
+                };
+            }
+
+            // query for seller
+            if (req.query.role === 'seller') {
+                query = {
+                    role: 'seller',
+                };
+            }
+
+            // finding user in database
             const users = await usersCollection.find(query).toArray();
 
             res.send(users);
