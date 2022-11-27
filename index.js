@@ -66,6 +66,7 @@ async function run() {
                     expiresIn: '2y',
                 });
 
+                console.log(token);
                 return res.send({ accessToken: token });
             }
             res.send({
@@ -98,7 +99,9 @@ async function run() {
                 isAdvertised: true,
                 isSold: false,
             };
-            const products = await productCollection.find(query).toArray();
+            const products = await (
+                await productCollection.find(query).toArray()
+            ).reverse();
 
             res.send(products);
         });
@@ -211,9 +214,9 @@ async function run() {
                 return res.send(result);
             }
 
-            // res.send({
-            //     success: false,
-            // });
+            res.send({
+                success: false,
+            });
         });
 
         // verify user
