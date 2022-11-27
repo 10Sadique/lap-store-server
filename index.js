@@ -57,7 +57,7 @@ async function run() {
         /*---- JWT Endpoint----*/
         app.get('/jwt', async (req, res) => {
             const email = req.query.email;
-            console.log(email);
+            // console.log(email);
             const query = { email: email };
             const user = await usersCollection.findOne(query);
 
@@ -66,7 +66,7 @@ async function run() {
                     expiresIn: '2y',
                 });
 
-                console.log(token);
+                // console.log(token);
                 return res.send({ accessToken: token });
             }
             res.send({
