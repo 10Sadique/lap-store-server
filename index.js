@@ -93,7 +93,7 @@ async function run() {
         });
 
         // Get advertised products
-        app.get('/products/advertised', async (req, res) => {
+        app.get('/products/advertised', verifyJWT, async (req, res) => {
             const query = {
                 isAdvertised: true,
                 isSold: false,
